@@ -60,7 +60,6 @@
   });
 
   socket.on('message', function(msg){
-    var uname = $('<span class="username"/>').text('default').css('color', 'red');
     $('#messages').append(uname, $('<li>').text(msg));
   });
 </script>
