@@ -17,7 +17,8 @@
       border-left: 2px dotted green; }
       #messages li { padding: 5px 10px; 
                     border-bottom: 1px solid blue; 
-  }
+      }
+      #nickname { border: 2; padding: 10px; width: 100%; margin-right: .5%; }
       #messages li:nth-child(odd) { background: #eee; }
       #username {
         font-weight: 600;
@@ -40,7 +41,8 @@
 
   <ul id="messages">
     <form action="">
-      <input id="m" autocomplete="off" />
+      <input id="m"/>
+      <input id='nick' autocomplete="off" />
       <button id='send'>Send</button>
       <button id='h'> Hide </button>
       <button id='history'>History</button>
@@ -61,8 +63,8 @@
       if(splitter[0] == 'video'){
         appendVideo(splitter[1]);
       }
-      if(splitter[0] == 'gitstat'){
-        socket.emit('gitstat', splitter[1]);
+      if(splitter[0] == 'gitclone'){
+        socket.emit('gitclone', splitter);
       }
       return false;
     }else{
