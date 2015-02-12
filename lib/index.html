@@ -40,7 +40,6 @@
 
   <ul id="messages">
     <form action="">
-      <input id='nick' autocomplete="off" />
       <input id="m" autocomplete="off" />
       <button id='send'>Send</button>
       <button id='h'> Hide </button>
@@ -62,11 +61,17 @@
       if(splitter[0] == 'video'){
         appendVideo(splitter[1]);
       }
+      if(splitter[0] == 'gitstat'){
+        socket.emit('gitstat', splitter[1]);
+      }
       return false;
     }else{
-      socket.emit('message', {nick: nick, text: $('#m').val()});
-      $('#m').val('');
-      return false;
+      var currentMessage = $('#m').val();
+      if(currentMessage != ''){
+        socket.emit('message', {nick: nick, text: currentMessage});
+        $('#m').val('');
+        return false;
+      }
     }
 
   };
