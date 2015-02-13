@@ -41,8 +41,8 @@
 
   <ul id="messages">
     <form action="">
-      <input id="m"/>
-      <input id='nick' autocomplete="off" />
+      <input id='nick' placeholder="Enter your nickname" />
+      <input id="m" autocomplete="off"  placeholder="Put your message" />
       <button id='send'>Send</button>
       <button id='h'> Hide </button>
       <button id='history'>History</button>
@@ -123,6 +123,7 @@
       };
 
       $('#nickname').text(nick);
+      $('#nick').hide()
       socket.emit('data1', info);
     }
   })
