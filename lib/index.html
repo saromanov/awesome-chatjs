@@ -5,13 +5,13 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #400; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 100%; margin-right: .5%; }
+      #form { background: #400; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      input { border: 0; padding: 10px; width: 100%; margin-right: .5%; }
 
-      form button { width: 9%; background: rgb(120, 120,120); border: none; padding: 10px;
+      button { width: 9%; background: rgb(120, 120,120); border: none; padding: 10px;
 
        }
-      form button { width: 9%; background: rgb(100, 220, 220); border: none; padding: 10px;
+      button { width: 9%; background: rgb(100, 220, 220); border: none; padding: 10px;
        }
       #messages { list-style-type: none; margin: 0; padding: 0; 
       border-left: 2px dotted green; }
@@ -40,13 +40,14 @@
   </ui>
 
   <ul id="messages">
-    <form action="">
+    <div class="form">
       <input id='nick' placeholder="Enter your nickname" />
+      <input id='pass' autocomplete='off' placeholder="put your password" />
       <input id="m" autocomplete="off"  placeholder="Put your message" />
       <button id='send'>Send</button>
       <button id='h'> Hide </button>
       <button id='history'>History</button>
-    </form>
+    </div>
   </ul>
 
   <script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
@@ -56,7 +57,7 @@
 <script>
 
   var sendMessage = function(text){
-    var nick = $('#nickname').val();
+    var nick = $('#nick').val();
     if(text[0] == "%"){
       text = text.replace('%','');
       var splitter = text.split(' ');
@@ -68,9 +69,9 @@
       }
       return false;
     }else{
-      var currentMessage = $('#m').val();
-      if(currentMessage != ''){
-        socket.emit('message', {nick: nick, text: currentMessage});
+      //var currentMessage = $('#m').val();
+      if(text != ''){
+        socket.emit('message', {nick: nick, text: text});
         $('#m').val('');
         return false;
       }
@@ -78,7 +79,19 @@
 
   };
 
-
+  var generateUser = function(){
+    var nick = $('#nick').val();
+      $('#nick').hide();
+      var salt = Math.random().toString();
+      var styles = {
+        color:"rgb(" + getRandomInt(0,200) + ", " + getRandomInt(0,200) + ", " + getRandomInt(0,200) + ")"
+      };
+      var info = {
+        nick: nick,
+        styles: styles
+      };
+      return info;
+  }
 
   var getRandomInt = function(min, max)
   {
@@ -108,22 +121,23 @@
     }
   });
 
+  $('#pass').keypress(function(evt){
+    if(evt.which == 13){
+      var nick = $('#nick').val().toLowerCase();
+      if(nick == '')
+        return
+      var pass = $('#pass').val();
+      socket.emit('store user', nick, pass);
+      var info = generateUser();
+      socket.emit('data1', info)
+    }
+  });
+
   $('#nick').keypress(function(evt){
     if(evt.which == 13){
-      var nick = $(this).val();
-      $(this).hide();
-      var salt = Math.random().toString();
-      var styles = {
-        color:"rgb(" + getRandomInt(0,200) + ", " + getRandomInt(0,200) + ", " + getRandomInt(0,200) + ")"
-      };
-      var info = {
-        nick: nick,
-        styles: styles
-        /*hash:crypto.createHash('sha1').update(salt).digest('hex');*/
-      };
-
-      $('#nickname').text(nick);
-      $('#nick').hide()
+      var info = generateUser();
+      $('#nick').hide();
+      $('#pass').hide();
       socket.emit('data1', info);
     }
   })
@@ -138,21 +152,21 @@
     socket.emit('gethistory', 'default');
   })
 
-  $(document).ready(function(){
-    var nick = 'default';
-    var color = getRandomInt(0,200);
-    //socket.emit('connected', 'value')
-  });
 
-  socket.on('message', function(msg){
-    var color = getRandomInt(0,200);
+ socket.on('message', function(msg){
     //Need set to pre-load
-    var styles = {
-      color:"rgb(" + color + ", " + getRandomInt(0,200) + ", " + getRandomInt(0,200) + ")"
-    };
-    var uname = $('<span class="username"/>').text(msg.nick + ": ").css(styles);
+    var uname = $('<span class="username"/>').text(msg.nick + ": ").css(msg.style);
     $('#messages').append(uname, $('<li>').text(msg.text));
   });
+
+ socket.on('correct pass', function(){
+  $('#nick').hide()
+  $('#pass').hide()
+ })
+
+ socket.on('incorrect pass', function(value){
+
+ })
 
   socket.on('connected', function(value){
     console.log("OUT");
