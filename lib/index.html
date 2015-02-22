@@ -18,12 +18,14 @@
       #messages li { padding: 5px 10px; 
                     border-bottom: 1px solid blue; 
       }
-      #nickname { border: 2; padding: 10px; width: 100%; margin-right: .5%; }
+      #nickname { border: 2; padding: 10px; width: 100%; margin-right: .5%; color: blue;}
       #messages li:nth-child(odd) { background: #eee; }
       #username {
         font-weight: 600;
         color: blue;
       }
+
+      #usersnum {width: 100%;}
 
       #nick {
         border: 5;
@@ -35,8 +37,9 @@
     </head>
   <body>
   <ui id='info'>
-    <strong> Number of users: 5</strong><br>
+    <strong id='usersnum'></strong><br>
     <strong id = 'nickname'></strong>
+    <p id='infomsg'></p>
   </ui>
 
   <ul id="messages">
@@ -47,6 +50,7 @@
       <button id='send'>Send</button>
       <button id='h'> Hide </button>
       <button id='history'>History</button>
+      <button id='logout'> Logout </button>
     </div>
   </ul>
 
@@ -128,8 +132,6 @@
         return
       var pass = $('#pass').val();
       socket.emit('store user', nick, pass);
-      var info = generateUser();
-      socket.emit('data1', info)
     }
   });
 
@@ -152,6 +154,10 @@
     socket.emit('gethistory', 'default');
   })
 
+  $('#logout').click(function(){
+    
+  })
+
 
  socket.on('message', function(msg){
     //Need set to pre-load
@@ -162,10 +168,17 @@
  socket.on('correct pass', function(){
   $('#nick').hide()
   $('#pass').hide()
+  var info = generateUser();
+  socket.emit('data1', info)
+  $('#nickname').text(info.nick)
+ })
+
+ socket.on('new user', function(nick){
+  $('#infomsg').text("Hello new user, " + nick)
  })
 
  socket.on('incorrect pass', function(value){
-
+  $('#infomsg').text("Password is incorrect")
  })
 
   socket.on('connected', function(value){
