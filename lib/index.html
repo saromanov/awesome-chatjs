@@ -97,6 +97,15 @@
       return info;
   }
 
+  var setUser = function(nick){
+    $('#infomsg').text("Hello new user, " + nick)
+    $('#nick').hide()
+    $('#pass').hide()
+    var info = generateUser();
+    socket.emit('data1', info)
+    $('#nickname').text(nick)
+  }
+
   var getRandomInt = function(min, max)
   {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -174,7 +183,7 @@
  })
 
  socket.on('new user', function(nick){
-  $('#infomsg').text("Hello new user, " + nick)
+  setUser(nick)
  })
 
  socket.on('incorrect pass', function(value){
